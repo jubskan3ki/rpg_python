@@ -1,0 +1,225 @@
+def roulette(window_tp, coins, Inventaire, Objet):
+
+    def action(Variable, valeur):
+        Variable.set(valeur)
+
+    def resultat_window(window, Choix, Mise, coins, Inventaire, Objet):
+        window.withdraw()
+        Jeu = Toplevel(window)
+        
+        Result = randint(1, 36)
+        print("resultat window :", Choix, Mise, Result)
+
+        rouges = [1, 3, 7, 9, 12, 14, 16, 18, 21, 23, 25, 27, 28, 30, 32, 34, 36]
+        noirs = [2, 4, 5, 6, 8, 10, 11, 13, 15, 17, 19, 20, 22, 24, 26, 29, 31, 33, 35]
+
+        if Choix == "Manque" or Choix == "Passe":
+            manques = []
+            for i in range (1,19):
+                manques.append(i)
+            if Result in manques :
+                Gagnant = "Manque"
+
+            passes = []
+            for i in range (19, 37):
+                passes.append(i)
+            if Result in passes :
+                Gagnant = "Passe"
+
+        elif Choix == "Pair" or Choix == "Impair":    
+            pairs = []
+            for i in range (2,38,2):
+                pairs.append(i)
+
+            if Result in pairs :
+                Gagnant = "Pair"
+
+            impaires = []
+            for i in range (1,37,2):
+                impaires.append(i)
+            if Result in impaires :
+                Gagnant = "Impair"
+
+        elif Choix == "Rouge" or Choix == "Noir":
+            if Result in rouges :
+                Gagnant = "Rouge"
+            elif Result in noirs :
+                Gagnant = "Noir"
+
+        print("gagnant: ", Gagnant)
+        #creation 3e fenetre -> affichage de la roulette
+        Jeu.title("LA ROULETTE")
+        Jeu.geometry("1350x680")
+        Jeu.resizable(height=False , width= False)
+        Jeu.config(background='black')
+
+        Label(Jeu, text = "Voici le résultat",font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white').pack()
+
+        width = 1000
+        height = 500
+
+        canvas1 = Canvas( Jeu, width = width, height = height, bg="darkgreen")
+        
+        canvas1.pack(expand = YES)
+        
+        #on ouvre l'image
+        img = Image.open("logo.png")
+
+        #on la redimensionne
+        redimension = img.resize((200, 200), Image.ANTIALIAS)
+
+        img_fin = ImageTk.PhotoImage(redimension)
+
+        # Affichage image
+        canvas1.create_image(width/2, 10, image = img_fin, anchor="n")
+        if Result in rouges :
+            canvas1.create_text(width/2, 270, text=Result, font= ("Super legend boy" , 30), fill="red")  
+        elif Result in noirs :
+            canvas1.create_text(width/2, 270, text=Result, font= ("Super legend boy" , 30),fill="black")
+
+        
+        
+        
+        #canvas2 = Canvas(Jeu, 1050, 500, bg="black").pack(expand=YES)
+        if Choix == Gagnant :
+            canvas1.create_text(width/2, 350, text=("Vous avez choisi", Choix), font= ("Super legend boy" , 30), fill="gold")
+            if Objet == "Quitte ou triple":
+                Mise = Mise*3
+                Inventaire[0] = Inventaire[0]-1
+            coins = coins + Mise
+            Label(Jeu, text="Vous avez gagné !",font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white').pack(expand=YES)
+            Label(Jeu, text=("Vous disposez de",coins, "coins"),font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white').pack(expand=YES)
+            quit = Button(Jeu, text= "QUITTER !", font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' , command = lambda:tp(Jeu,coins))
+            quit.pack()
+            Jeu.mainloop()
+        else :
+            canvas1.create_text(width/2, 350, text=("Vous avez choisi", Choix), font= ("Super legend boy" , 30), fill="silver")            
+            if Objet == "Quitte ou triple":
+                Mise = Mise * 2
+                Inventaire[0] = Inventaire[0]-1
+            elif Objet == "Bouclier":
+                Mise = 0
+                Inventaire[1] = Inventaire[1]-1
+            coins = coins-Mise
+            Label(Jeu, text = "Vous avez perdu.",font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white').pack(expand=YES)
+            Label(Jeu, text=("Vous disposez de",coins, "coins"),font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white').pack(expand=YES)
+            quit = Button(Jeu, text= "QUITTER !", font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' , command = lambda:tp(Jeu,coins))
+            quit.pack()
+            Jeu.mainloop()
+    
+    def roulette_jeu(window, coins,Choix, Mise, Inventaire, Objet):
+        window.withdraw()
+        window_roulette = Toplevel(window)
+        # creation de la 1e fenetre
+        # configuration des parametres de la fenetre
+        window_roulette.title("ROULETTE")
+        window_roulette.geometry("1350x680")
+        window_roulette.config(background='black')
+        # pas de possibilité de + / - la fenetre
+        window_roulette.resizable(height=False , width= False)
+        
+
+        title = Label(window_roulette, text = "LA ROULETTE " , font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white')
+        title.grid(sticky="n", columnspan=1)
+        
+        Annonce = Label(window_roulette, text="Faites vos jeux." , font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white')
+        Annonce.grid(sticky="n")
+        Annonce_2 = Label(window_roulette, text=" Jouez sur les numéros de 1 à 18 (Manque) ou 19 à 36 (Passe), pairs ou impairs, rouges ou noirs.", font= ("Super legend boy" , 14))
+        Annonce_2.grid(padx = 30)
+
+        StrChoix = StringVar(window)
+        IntMise = IntVar(window)
+        objet = Label(window_roulette, text=("Objet actif :", Objet) , font= ("Super legend boy" , 15) , bg = 'black' , fg = 'white')
+        objet.grid(pady=20, row=5)
+        choix = Label(window_roulette, text=("Choix de jeu :", Choix) , font= ("Super legend boy" , 15) , bg = 'black' , fg = 'white')
+        choix.grid(pady=20, row=3)
+        jetons = Label(window_roulette, text=("Jetons :", coins) , font= ("Super legend boy" , 15) , bg = 'black' , fg = 'white')
+        jetons.grid(pady=20, row=4)
+        mise = Label(window_roulette, text=("Mise :", Mise) , font= ("Super legend boy" , 15) , bg = 'black' , fg = 'white')
+        mise.grid(pady=20, row=8)
+
+        #Les boutons de jeux
+        btn_Manque = Radiobutton(window_roulette , text = "Manque" ,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= StrChoix, value = "Manque",command = lambda : [action(StrChoix, "Manque"),roulette_jeu(window_roulette, coins, "Manque", Mise, Inventaire, Objet)], indicatoron=0)
+        btn_Manque.grid(padx=10, pady=20, sticky="w", row = 3)
+        btn_Passe = Radiobutton(window_roulette , text = "Passe" ,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= StrChoix, value = "Passe",command = lambda : [action(StrChoix, "Passe"),roulette_jeu(window_roulette, coins, "Passe", Mise, Inventaire, Objet)], indicatoron=0)
+        btn_Passe.grid(sticky="e", pady=20, row=3, padx=10)
+        btn_Pair = Radiobutton(window_roulette , text = "Pair" ,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= StrChoix, value = "Pair",command = lambda : [action(StrChoix, "Pair"),roulette_jeu(window_roulette, coins, "Pair", Mise, Inventaire, Objet)], indicatoron=0)
+        btn_Pair.grid(sticky="w", row=4, padx=10, pady=20)
+        btn_Impair = Radiobutton(window_roulette , text = "Impair" ,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= StrChoix, value = "Impair",command = lambda : [action(StrChoix, "Impair"),roulette_jeu(window_roulette, coins, "Impair", Mise, Inventaire, Objet)], indicatoron=0)
+        btn_Impair.grid(sticky="e", row=4, padx=10)
+        btn_Rouge = Radiobutton(window_roulette , text = "Rouge" ,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= StrChoix, value = "Rouge",command = lambda : [action(StrChoix, "Rouge"),roulette_jeu(window_roulette, coins, "Rouge", Mise, Inventaire, Objet)], indicatoron=0)
+        btn_Rouge.grid(sticky="w", row=5, padx=10, pady=20)
+        btn_Noir = Radiobutton(window_roulette , text = "Noir" ,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= StrChoix, value = "Noir",command = lambda : [action(StrChoix, "Noir"),roulette_jeu(window_roulette, coins, "Noir", Mise, Inventaire, Objet)], indicatoron=0)
+        btn_Noir.grid(sticky="e", row=5, padx=10, pady=20)
+
+        
+        
+        
+        #Les boutons de mise
+        btn_100 = Radiobutton(window_roulette , text = 100 ,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= IntMise, value = 100,command = lambda : [action(IntMise, 100),roulette_jeu(window_roulette, coins, Choix, 100, Inventaire, Objet)], indicatoron=0)
+        btn_100.grid(sticky="w", row=8, padx=10)
+        
+        btn_250 = Radiobutton(window_roulette , text = 250,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white',variable= IntMise, value = 250, command = lambda : [action(IntMise, 250),roulette_jeu(window_roulette, coins, Choix, 250, Inventaire, Objet)], indicatoron=0)
+        btn_250.grid(sticky="e", row=8, padx=10)
+        
+        
+        btn_500 = Radiobutton(window_roulette , text = 500,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= IntMise, value = 500,command = lambda : [action(IntMise, 500),roulette_jeu(window_roulette, coins, Choix, 500, Inventaire, Objet)], indicatoron=0)
+        btn_500.grid(sticky="w", row=9, padx=10, pady=20)
+        
+        btn_1000 = Radiobutton(window_roulette , text = 1000,font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= IntMise, value = 1000,command = lambda : [action(IntMise, 1000),roulette_jeu(window_roulette, coins, Choix, 1000, Inventaire, Objet)], indicatoron=0)
+        btn_1000.grid(sticky="e", row=9, padx=10, pady=20)
+        
+        btn_all = Radiobutton(window_roulette , text = "All in",font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' ,variable= IntMise, value = coins, command = lambda : [action(IntMise, coins),roulette_jeu(window_roulette, coins, Choix, coins, Inventaire, Objet)], indicatoron=0)
+        btn_all.grid(sticky="s", row=9)
+        
+        btn_Start = Button(window_roulette, text="Start", font= ("Super legend boy" , 20) , bg = 'black' , fg = 'white' , command =lambda:resultat_window(window_roulette, Choix, Mise, coins, Inventaire, Objet))
+        btn_Start.grid(sticky="s", row=6)
+        
+        #changer l'état des boutons
+        if coins < 100:
+            changeState(btn_1000)
+            changeState(btn_500)
+            changeState(btn_250)
+            changeState(btn_100)
+
+        elif coins < 250:
+            changeState(btn_1000)
+            changeState(btn_500)
+            changeState(btn_250)
+
+        elif coins < 500:
+            changeState(btn_1000)
+            changeState(btn_500)
+        
+        elif coins < 1000:
+            changeState(btn_1000)
+        
+        window_roulette.mainloop()
+        
+    
+    window_tp.withdraw()
+     # creation de la 1e fenetre
+    window_1 = Toplevel(window_tp)
+    # configuration des parametres de la fenetre
+    window_1.title("LA ROULETTE")
+    window_1.geometry("1350x680")
+    window_1.minsize(480 , 360)
+    window_1.config(background='black')
+    # pas de possibilité de + / - la fenetre
+    window_1.resizable(height=False , width= False)
+    Choix = "Rien"
+    Mise = 0
+    title = Label(window_1, text = "LA ROULETTE " , font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white')
+    start = Button(window_1, text= "COMMENCER !", font= ("Super legend boy" , 60) , bg = 'black' , fg = 'white' , command = lambda : roulette_jeu(window_1, coins, Choix, Mise, Inventaire, Objet))
+    title.pack(side=TOP)
+    start.pack(expand=YES)
+    objet = Label(window_1, text=("Objet actif :", Objet) , font= ("Super legend boy" , 40) , bg = 'black' , fg = 'white')
+    objet.pack(expand=YES)
+    btn_Start = Button(window_1, text="Inventaire", font= ("Super legend boy" , 30) , bg = 'black' , fg = 'white' , command = lambda:  bag_roulette(window_1, coins, Inventaire, Objet))
+    btn_Start.pack(expand=YES)
+
+    if Objet == "Corde de sortie":
+        tp(window_1, coins)
+        Inventaire[2] = Inventaire[2]-1
+
+    window_1.mainloop()
